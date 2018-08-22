@@ -10,6 +10,7 @@ jQuery(document).ready(function($){
 		}
 
 		window.profiles=users.split(",");
+		iteration();
 	});
 });
 
@@ -30,45 +31,43 @@ function init(){
 	var trigger_btn=document.createElement("div");
 	trigger_btn.appendChild(document.createTextNode("Start Stalking!"));
 	trigger_btn.classList.add("w_stalk_trigger_btn");
-	document.querySelector("._2umId").appendChild(trigger_btn);
-	
+	$("._2umId").append(trigger_btn);
 	//add an event listener
 }
 
 // var interval=setInterval(iteration,3000);
 
 function iteration(){
-	var contacts=document.getElementsByClassName("_2wP_Y");
+	$.each(profiles,function(key,val){
+		setTimeout(function(){
+			var contact_span=$("span[dir='auto']._1wjpf[title='"+val+"']");
+			if(contact_span.length){
+				var contact=contact_span.parents("._2EXPL");
+				open_contact(contact[0]);
+				setTimeout(() => {
+					var cur_time=new Date();
+					if(is_online(contact))
+						console.log(val + " was online at "+cur_time);
+					// else
+					// 	console.log("")
+				}, 100);
+			}
+		},key*2000);
+	});
 
-	for(var i=0;i<contacts.length;i++){
-		var contact=contacts[i];
-		var contact_name=contact.querySelector("span[dir='auto']._1wjpf");
-		if(contact_name.title == profile && contact_name.innerHTML==profile){
-			open_contact(contact);
-			setTimeout(() => {
-				var cur_time=new Date();
-				if(check_online())
-					console.log(profile + " was online at "+cur_time);
-				// else
-					// console.log("")
-			}, 100);
-		}
-	}
+	setTimeout(iteration,(profiles.length+1)*2000);
 }
 
 
+//jquery events won't work
+//need to use to Native JS events
 function open_contact(contact){
-	trigger_evt(contact.querySelector("._2EXPL"),'mousedown');
-	trigger_evt(contact.querySelector("._3j7s9"),'mousedown');
+	var mouse_evt= document.createEvent('MouseEvents');
+    mouse_evt.initEvent('mousedown', true, true);
+    contact.dispatchEvent(mouse_evt);
 }
 
-function trigger_evt(el,evt){
-	var mouse_evt= document.createEvent ('MouseEvents');
-    mouse_evt.initEvent(evt, true, true);
-    el.dispatchEvent(mouse_evt);
-}
-
-function check_online(){
+function is_online(){
 	var online_span=document.getElementById("main").querySelector("[title='online'].O90ur");
 	if(online_span)
 		return true;
