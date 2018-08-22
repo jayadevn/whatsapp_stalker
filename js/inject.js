@@ -1,6 +1,41 @@
-var profile="Profile Name";
+var profiles=[];
+jQuery(document).ready(function($){
+	loop();
 
-var interval=setInterval(iteration,3000);
+	$("body").on("click",".w_stalk_trigger_btn",function(e){
+		var users=prompt("Enter the ,(coma) separated users you would like to monitor(No spaces)");
+		if(!users || !users.length){
+			alert("Invalid users selected!");
+			return;
+		}
+
+		window.profiles=users.split(",");
+	});
+});
+
+//keep looping until the loading screen is over
+function loop(){
+	if($("#side").length){
+		init();
+		console.log("init");
+	}
+	else{
+		setTimeout(loop,1000);
+		console.log("looping");
+	}
+}
+
+function init(){
+	//create a button that lets users start the monitoring
+	var trigger_btn=document.createElement("div");
+	trigger_btn.appendChild(document.createTextNode("Start Stalking!"));
+	trigger_btn.classList.add("w_stalk_trigger_btn");
+	document.querySelector("._2umId").appendChild(trigger_btn);
+	
+	//add an event listener
+}
+
+// var interval=setInterval(iteration,3000);
 
 function iteration(){
 	var contacts=document.getElementsByClassName("_2wP_Y");

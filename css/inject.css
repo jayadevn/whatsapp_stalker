@@ -1,0 +1,14 @@
+#side ._2umId{
+	position: relative;
+}
+.w_stalk_trigger_btn{
+	background: #9de1fe;
+    color: #000;
+    cursor: pointer;
+    padding: 3px 6px;
+    border-radius: 4px;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
