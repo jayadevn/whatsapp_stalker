@@ -1,4 +1,4 @@
-var profiles=[];
+var profiles=[],profiles_status=[];
 jQuery(document).ready(function($){
 	loop();
 
@@ -11,7 +11,7 @@ jQuery(document).ready(function($){
 
 		window.profiles=users.split(",");
 		window.cur_profile=profiles[0];
-		iteration();
+		tick();
 	});
 });
 
@@ -37,7 +37,7 @@ function init(){
 }
 
 //tick function
-function iteration(){
+function tick(){
 	// console.log("iteration:"+cur_profile);
 	var contact_span=$("span[dir='auto']._1wjpf[title='"+window.cur_profile+"']");
 	if(contact_span.length){
@@ -49,11 +49,23 @@ function iteration(){
 					if(online_status)
 						console.log(cur_profile + " was online at "+cur_time);
 
+					profiles_status.push({'name':cur_profile,'time':cur_time.getTime(),'status':online_status});
+
 					//change the cur_profile to the next one in the list
 					var i=profiles.indexOf(cur_profile),
 						timeout=(i===profiles.length-1)?2000:200;
 					cur_profile=(i===profiles.length-1)?profiles[0]:profiles[i+1];
-					setTimeout(iteration,timeout);
+
+					//if we have completed a cycle, send this info to our background script to do what it wants with it.
+					if(i===profiles.length-1){
+						chrome.runtime.sendMessage(profiles_status, function(response) {
+							console.log(response);
+							profiles_status=[];
+							
+						});
+					}
+					
+					setTimeout(tick,timeout);
 				}));
 			}, 100);
 		});
