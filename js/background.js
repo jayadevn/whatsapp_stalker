@@ -25,6 +25,10 @@ chrome.runtime.onInstalled.addListener(function(){
 	});
 });
 
+chrome.browserAction.onClicked.addListener(function(tab) {
+	chrome.tabs.create({'url': chrome.extension.getURL('history.html')},function(tab){});
+});
+
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	// console.log(request,sender);

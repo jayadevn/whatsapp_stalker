@@ -4,6 +4,9 @@
 	"name": "WhatsApp Stalker",
 	"description": "This extension notifies you when a select group of people come online, using Whatsapp Web",
 	"version": "1.0",
+	"browser_action": {
+		"default_title":"Whatsapp Stalker"
+	},
 	"content_scripts": [
 		{
 		  "matches": ["https://web.whatsapp.com/"],
@@ -16,6 +19,7 @@
 		"persistent": false
 	},
 	"permissions": [
-		"storage"
+		"storage",
+		"contextMenus"
 	]
 }
