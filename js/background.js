@@ -42,10 +42,28 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		//and remove the contact from monitored_profiles
 		else if(found_index!=-1 && contact.status==0){
 			console.log(found_index,monitored_profiles[found_index]);
-			profiles_history.push({'name':contact.name,'online_from':monitored_profiles[found_index].online_from,'online_till':contact.time});
+			var found=false,
+				online_times={from:monitored_profiles[found_index].online_from,'to':contact.time};
+			
+			profiles_history.forEach(function(row){
+				//If there is already an entry for this user, just update the online times
+				if(row.name==contact.name){
+					found=true;
+					row.online_times.push(online_times);
+				}
+			});
+
+			//if this user doesn't exist in the profiles_history localstorage
+			//add it
+			if(!found)
+				profiles_history.push({'name':contact.name,'online_times':[online_times]});
+
+			//update the storage with this new value
 			chrome.storage.sync.set({profiles_history: profiles_history}, function(){
 				console.log("updated storage");
 			});
+
+			//since this user has gone online, just remove it from the monitored_profiles array
 			monitored_profiles.splice(found_index,1);
 		}
 	}
