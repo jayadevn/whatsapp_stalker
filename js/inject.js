@@ -1,18 +1,32 @@
-var profiles=[],profiles_status=[];
+var profiles=[],profiles_status=[],current_stalk_list=[];
 jQuery(document).ready(function($){
 	loop();
 
 	$("body").on("click",".w_stalk_trigger_btn",function(e){
-		var users=prompt("Enter the ,(coma) separated users you would like to monitor(No spaces)");
+		var users=prompt("Enter the ,(coma) separated users you would like to monitor(No spaces)",current_stalk_list.join(","));
 		if(!users || !users.length){
 			alert("Invalid users selected!");
 			return;
 		}
 
+		current_stalk_list=[];
 		window.profiles=users.split(",");
 		window.cur_profile=profiles[0];
 		tick();
 	});
+
+	$("body").on("mouseenter","._2wP_Y",function(){
+		var el=$("<div class='w_stalk_contact'>Stalk me!</div>");
+		if(!$(this).find(".w_stalk_contact").length){
+			$(this).append(el);
+		}
+	});
+
+	$("body").on("click",".w_stalk_contact",function(){
+		var contact_name=$(this).parents("._2wP_Y").find("._1wjpf").attr("title");
+		if(current_stalk_list.indexOf(contact_name)==-1)
+			current_stalk_list.push(contact_name);
+	})
 });
 
 //keep looping until the loading screen is over
