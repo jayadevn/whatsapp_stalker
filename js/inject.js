@@ -1,13 +1,26 @@
-var profiles=[],profiles_status=[],current_stalk_list=[];
+var profiles=[],profiles_status=[],current_stalk_list=[],tick_timeout;
 jQuery(document).ready(function($){
 	loop();
 
 	$("body").on("click",".w_stalk_trigger_btn",function(e){
+
+		//If the stalking was already started
+		if($(this).attr("data-started")=="1"){
+			$(this).attr("data-started","0");
+			$(this).text("Start Stalking!");
+			clearTimeout(tick_timeout);
+			return;
+		}
+
 		var users=prompt("Enter the ,(coma) separated users you would like to monitor(No spaces)",current_stalk_list.join(","));
 		if(!users || !users.length){
 			alert("Invalid users selected!");
 			return;
 		}
+
+		//stalking is about to start
+		$(this).attr("data-started","1");
+		$(this).text("Stop Stalking!");
 
 		current_stalk_list=[];
 		window.profiles=users.split(",");
@@ -46,6 +59,7 @@ function init(){
 	var trigger_btn=document.createElement("div");
 	trigger_btn.appendChild(document.createTextNode("Start Stalking!"));
 	trigger_btn.classList.add("w_stalk_trigger_btn");
+	trigger_btn.setAttribute('data-started',0);
 	$("._2umId").append(trigger_btn);
 	//add an event listener
 }
@@ -79,7 +93,9 @@ function tick(){
 						});
 					}
 					
-					setTimeout(tick,timeout);
+					//if the user has clicked the 'stop stalking' button, let's stop!
+					if($(".w_stalk_trigger_btn").attr("data-started")=="1")
+						tick_timeout=setTimeout(tick,timeout);
 				}));
 			}, 100);
 		});
