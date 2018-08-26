@@ -1,0 +1,11 @@
+.user{
+	margin:10px 0;
+}
+.view_times_btn{
+	display: inline-block;
+	cursor:pointer;
+	background:#3aa9bb;
+	color:#fff;
+	border-radius:5px;
+	padding:5px 10px;
+}
