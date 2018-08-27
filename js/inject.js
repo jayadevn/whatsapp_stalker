@@ -3,7 +3,6 @@ jQuery(document).ready(function($){
 	loop();
 
 	$("body").on("click",".w_stalk_trigger_btn",function(e){
-
 		//If the stalking was already started
 		if($(this).attr("data-started")=="1"){
 			$(this).attr("data-started","0");
@@ -17,7 +16,6 @@ jQuery(document).ready(function($){
 			alert("Invalid users selected!");
 			return;
 		}
-
 		//stalking is about to start
 		$(this).attr("data-started","1");
 		$(this).text("Stop Stalking!");
@@ -35,11 +33,17 @@ jQuery(document).ready(function($){
 		}
 	});
 
-	$("body").on("click",".w_stalk_contact",function(){
+	$("body").on("click",".w_stalk_contact",function(e){
+		e.stopPropagation();
 		var contact_name=$(this).parents("._2wP_Y").find("._1wjpf").attr("title");
 		if(current_stalk_list.indexOf(contact_name)==-1)
 			current_stalk_list.push(contact_name);
-	})
+	});
+
+	$("body").on("click","._1Wk6A",function(){
+		$(".jN-F5").focus();
+		whatsAppText("ab");
+	});
 });
 
 //keep looping until the loading screen is over
@@ -66,52 +70,60 @@ function init(){
 
 //tick function
 function tick(){
-	// console.log("iteration:"+cur_profile);
-	var contact_span=$("span[dir='auto']._1wjpf[title='"+window.cur_profile+"']");
-	if(contact_span.length){
-		var contact=contact_span.parents("._2EXPL");
-		open_contact(contact[0],function(){
-			setTimeout(() => {
-				var cur_time=new Date();
-				if(check_online(function(online_status){
-					if(online_status)
-						console.log(cur_profile + " was online at "+cur_time);
+	open_contact(window.cur_profile,function(){
+		setTimeout(() => {
+			var cur_time=new Date();
+			if(check_online(function(online_status){
+				if(online_status)
+					console.log(cur_profile + " was online at "+cur_time);
 
-					profiles_status.push({'name':cur_profile,'time':cur_time.getTime(),'status':online_status});
+				profiles_status.push({'name':cur_profile,'time':cur_time.getTime(),'status':online_status});
 
-					//change the cur_profile to the next one in the list
-					var i=profiles.indexOf(cur_profile),
-						timeout=(i===profiles.length-1)?2000:200;
-					cur_profile=(i===profiles.length-1)?profiles[0]:profiles[i+1];
+				//change the cur_profile to the next one in the list
+				var i=profiles.indexOf(cur_profile),
+					timeout=(i===profiles.length-1)?2000:200;
+				cur_profile=(i===profiles.length-1)?profiles[0]:profiles[i+1];
 
-					//if we have completed a cycle, send this info to our background script to do what it wants with it.
-					if(i===profiles.length-1){
-						chrome.runtime.sendMessage(profiles_status, function(response) {
-							console.log(response);
-							profiles_status=[];
-							
-						});
-					}
-					
-					//if the user has clicked the 'stop stalking' button, let's stop!
-					if($(".w_stalk_trigger_btn").attr("data-started")=="1")
-						tick_timeout=setTimeout(tick,timeout);
-				}));
-			}, 100);
-		});
-	}
+				//if we have completed a cycle, send this info to our background script to do what it wants with it.
+				if(i===profiles.length-1){
+					chrome.runtime.sendMessage(profiles_status, function(response) {
+						console.log(response);
+						profiles_status=[];
+						
+					});
+				}
+				
+				//if the user has clicked the 'stop stalking' button, let's stop!
+				if($(".w_stalk_trigger_btn").attr("data-started")=="1")
+					tick_timeout=setTimeout(tick,timeout);
+			}));
+		}, 100);
+	});
 }
 
 
 //jquery events won't work
 //need to use to Native JS events
-function open_contact(contact,callback){
-	var mouse_evt= document.createEvent('MouseEvents');
-    mouse_evt.initEvent('mousedown', true, true);
-	contact.dispatchEvent(mouse_evt);
-	setTimeout(function(){
+function open_contact(contact_name,callback){
+	$('.jN-F5').focus();
+	window.InputEvent = window.Event || window.InputEvent;
+	var event = new InputEvent('input', {bubbles: true});
+	var textbox = $('.jN-F5')[0];
+	textbox.value = contact_name;
+	textbox.dispatchEvent(event);
+	find_contact_and_click_it(contact_name,callback);
+}
+
+function find_contact_and_click_it(contact_name,callback){
+	var contact_span=$("span[dir='auto']._1wjpf[title='"+contact_name+"']");
+	if(contact_span.length){
 		callback();
-	},200);
+	}
+	else{
+		setTimeout(function(){
+			find_contact_and_click_it(contact_name,callback);
+		},500);
+	}
 }
 
 function check_online(callback){
