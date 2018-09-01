@@ -117,7 +117,12 @@ function open_contact(contact_name,callback){
 function find_contact_and_click_it(contact_name,callback){
 	var contact_span=$("span[dir='auto']._1wjpf[title='"+contact_name+"']");
 	if(contact_span.length){
-		callback();
+		var mouse_evt= document.createEvent('MouseEvents');
+		mouse_evt.initEvent('mousedown', true, true);
+		contact_span.parents("._2EXPL")[0].dispatchEvent(mouse_evt);
+		setTimeout(function(){
+			callback();
+		},200);
 	}
 	else{
 		setTimeout(function(){
