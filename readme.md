@@ -14,7 +14,6 @@ This is a chrome extension that just monitors certain profiles to know when they
 - Click on **Load Unpacked**
 - Navigate to the folder you just cloned(_Steps until now won't be needed when the extension is released on the Chrome Store_).
 - Go to web.whatsapp.com.
-- Pin the chats you want to stalk(_WIP to remove this step_).
 - Click on **Start Stalking** and input the users(coma separated, no spaces between users) exactly as they appear on the page(_WIP to make this step easy_).
 - That's it, the extension will now record the history when those people come online.
 - To see the history, simply click the extension icon.
