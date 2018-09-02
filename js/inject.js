@@ -1,4 +1,5 @@
-var profiles=[],profiles_status=[],current_stalk_list=[],tick_timeout,stalk_btn_timeout;
+var profiles=[],profiles_status=[],current_stalk_list=[],tick_timeout,stalk_btn_timeout,
+	status_wait_time=500;	//the timeout in ms used in check_online()
 jQuery(document).ready(function($){
 	loop();
 
@@ -162,8 +163,13 @@ function check_online(callback){
 		},200);
 	}
 	else{
-		var online_span=$("#main").find(".O90ur[title='online']").length;
-		callback(online_span);
+		//We should wait for sometime here just so that if this status needs to be refreshed,
+		//it gets refreshed by whatsapp
+		setTimeout(function(){
+			var online_span=$("#main").find(".O90ur[title='online']").length,
+				typing_span=$("#main").find(".O90ur[title='typing…']").length;
+			callback(online_span || typing_span);
+		},status_wait_time);
 	}
 }
 
