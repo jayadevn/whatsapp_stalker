@@ -1,4 +1,4 @@
-var profiles=[],profiles_status=[],current_stalk_list=[],tick_timeout;
+var profiles=[],profiles_status=[],current_stalk_list=[],tick_timeout,stalk_btn_timeout;
 jQuery(document).ready(function($){
 	loop();
 
@@ -26,23 +26,43 @@ jQuery(document).ready(function($){
 		tick();
 	});
 
-	$("body").on("mouseenter","._2wP_Y",function(){
-		var el=$("<div class='w_stalk_contact'>Stalk me!</div>");
-		if(!$(this).find(".w_stalk_contact").length){
-			$(this).append(el);
-		}
+	$("body").on("mouseenter","._2wP_Y",function(e){
+		var left=$("#side").offset().left + $("#side").outerWidth(),
+			top=$(this).offset().top + $(this).outerHeight()/2,
+			contact_name=$(this).find("._1wjpf").first().text();
+
+		$(".w_stalk_contact").css({
+			left:left,
+			top:top,
+			opacity:1,
+			pointerEvents:'all'
+		}).html("Stalk <strong>"+contact_name+"</strong>!").attr("data-contact",contact_name);
+		clearTimeout(stalk_btn_timeout);
+	});
+
+	$("body").on("mouseenter",".w_stalk_contact",function(e){
+		clearTimeout(stalk_btn_timeout);
+	});
+
+	$("body").on("mouseleave","._2wP_Y",function(e){
+		clearTimeout(stalk_btn_timeout);
+		stalk_btn_timeout=setTimeout(function(){
+			hide_stalk_contact_btn();
+		},100);
+	});
+
+	$("body").on("mouseleave",".w_stalk_contact",function(e){
+		clearTimeout(stalk_btn_timeout);
+		stalk_btn_timeout=setTimeout(function(){
+			hide_stalk_contact_btn();
+		},100);
 	});
 
 	$("body").on("click",".w_stalk_contact",function(e){
-		e.stopPropagation();
-		var contact_name=$(this).parents("._2wP_Y").find("._1wjpf").attr("title");
+		var contact_name=$(this).attr("data-contact");
 		if(current_stalk_list.indexOf(contact_name)==-1)
 			current_stalk_list.push(contact_name);
-	});
 
-	$("body").on("click","._1Wk6A",function(){
-		$(".jN-F5").focus();
-		whatsAppText("ab");
 	});
 });
 
@@ -65,7 +85,10 @@ function init(){
 	trigger_btn.classList.add("w_stalk_trigger_btn");
 	trigger_btn.setAttribute('data-started',0);
 	$("._2umId").append(trigger_btn);
-	//add an event listener
+	
+	//add a 'Stalk this contact button'
+	var el=$("<div class='w_stalk_contact'>Stalk this person!</div>");
+	$(".app").append(el);
 }
 
 //tick function
@@ -142,4 +165,11 @@ function check_online(callback){
 		var online_span=$("#main").find(".O90ur[title='online']").length;
 		callback(online_span);
 	}
+}
+
+function hide_stalk_contact_btn(){
+	$(".w_stalk_contact").css({
+		opacity:0,
+		pointerEvents:'none'
+	});
 }

@@ -19,16 +19,44 @@
 .w_stalk_contact{
     opacity:0;
     pointer-events:none;
-    padding:5px 10px;
+    padding: 10px;
+    min-height: 60px;
+    max-width:300px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
     cursor:pointer;
-    position:absolute;
-    right:0;
-    top:0;
+    position:fixed;
     background:rgba(0,0,0,0.4);
     color:#fff;
+    transform:translate(20px,-50%);
     transition:opacity .4s ease-out;
+}
+.w_stalk_contact:before{
+    content:'';
+    display:block;
+    border-right:20px solid rgba(0,0,0,0.4);
+    border-top:20px solid transparent;
+    border-bottom:20px solid transparent;
+    position: absolute;
+    right:100%;
+    top:50%;
+    transform:translateY(-50%);
+}
+.w_stalk_contact:after{
+    content:'';
+    display:block;
+    position: absolute;
+    right:100%;
+    top:0;
+    width:20px;
+    height:100%;
 }
 ._2wP_Y:hover .w_stalk_contact{
     opacity:1;
     pointer-events:all;
+}
+.w_stalk_contact>strong{
+    display: inline-block;
+    margin-left:5px;
 }
