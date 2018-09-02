@@ -23,7 +23,7 @@ jQuery(document).ready(function($){
 });
 
 
-chrome.storage.sync.get(['profiles_history'],function(result){
+chrome.storage.local.get(['profiles_history'],function(result){
 	console.log(result);
 	if(result.profiles_history===undefined || !result.profiles_history.length){
 		$("#users_data").html("No records found");

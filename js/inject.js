@@ -87,9 +87,7 @@ function tick(){
 				//if we have completed a cycle, send this info to our background script to do what it wants with it.
 				if(i===profiles.length-1){
 					chrome.runtime.sendMessage(profiles_status, function(response) {
-						console.log(response);
 						profiles_status=[];
-						
 					});
 				}
 				
@@ -115,10 +113,11 @@ function open_contact(contact_name,callback){
 }
 
 function find_contact_and_click_it(contact_name,callback){
-	var contact_span=$("span[dir='auto']._1wjpf[title='"+contact_name+"']");
+	var contact_span=$("._2wP_Y span[dir='auto']._1wjpf[title='"+contact_name+"']");
 	if(contact_span.length){
 		var mouse_evt= document.createEvent('MouseEvents');
 		mouse_evt.initEvent('mousedown', true, true);
+		// console.log(contact_span,contact_span.parents("._2EXPL"),contact_span.parents("._2EXPL")[0]);
 		contact_span.parents("._2EXPL")[0].dispatchEvent(mouse_evt);
 		setTimeout(function(){
 			callback();

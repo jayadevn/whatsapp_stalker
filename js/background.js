@@ -2,27 +2,15 @@ var monitored_profiles=[],profiles_history=[];
 
 //Initialize the profiles_history Variable
 chrome.runtime.onStartup.addListener(function(){
-	chrome.storage.sync.get(['profiles_history'],function(result){
-		if(result.profiles_history===undefined){
-			chrome.storage.sync.set({profiles_history: []}, function(){});
-		}
-		else{
-			profiles_history=result.profiles_history;
-		}
-	});
+	console.log("entered onstartup");
+	get_saved_history();
 });
 
 //Initialize the profiles_history Variable
 //on startup event as well.
 chrome.runtime.onInstalled.addListener(function(){
-	chrome.storage.sync.get(['profiles_history'],function(result){
-		if(result.profiles_history===undefined){
-			chrome.storage.sync.set({profiles_history: []}, function(){});
-		}
-		else{
-			profiles_history=result.profiles_history;
-		}
-	});
+	console.log("entered oninstalled");
+	get_saved_history();
 });
 
 chrome.browserAction.onClicked.addListener(function(tab) {
@@ -31,7 +19,8 @@ chrome.browserAction.onClicked.addListener(function(tab) {
 
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-	// console.log(request,sender);
+	var history_updated=false;
+	console.log("onmessage: current history:",profiles_history);
 	for(var i=0;i<request.length;i++){
 		var contact=request[i],
 			found_index=contact_present(contact);
@@ -41,7 +30,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		if(found_index==-1 && contact.status==1){
 			monitored_profiles.push({'name':contact.name,'online_from':contact.time});
 		}
-		//if the contact was already in monitored_profiles and is now online
+		//if the contact was already in monitored_profiles and is now offline
 		//then add the summary of that contact to profiles_history
 		//and remove the contact from monitored_profiles
 		else if(found_index!=-1 && contact.status==0){
@@ -62,18 +51,31 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			if(!found)
 				profiles_history.push({'name':contact.name,'online_times':[online_times]});
 
-			//update the storage with this new value
-			chrome.storage.sync.set({profiles_history: profiles_history}, function(){
-				console.log("updated storage");
-			});
-
 			//since this user has gone online, just remove it from the monitored_profiles array
 			monitored_profiles.splice(found_index,1);
+			history_updated=true;
 		}
 	}
-	console.log(profiles_history);
+	if(history_updated)
+		//update the storage with new values if there was any change
+		chrome.storage.local.set({profiles_history: profiles_history}, function(){
+			console.log("updated storage");
+			console.log(profiles_history);
+		});
 	sendResponse({});
 });
+
+function get_saved_history(callback){
+	chrome.storage.local.get(['profiles_history'],function(result){
+		console.log("entered local.get");
+		if(result.profiles_history!==undefined){
+			console.log("history not undefined",result.profiles_history);
+			profiles_history=result.profiles_history;
+		}
+		if(callback)
+			callback();
+	});
+}
 
 function contact_present(contact){
 	for(var j=0;j<monitored_profiles.length;j++){
