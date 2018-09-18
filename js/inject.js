@@ -6,8 +6,8 @@ jQuery(document).ready(function($){
 //keep looping until the loading screen is over
 function loop(){
 	if($("#side").length){
-		init();
 		console.log("init");
+		init();
 	}
 	else{
 		setTimeout(loop,1000);
@@ -15,38 +15,41 @@ function loop(){
 	}
 }
 
+function pageInit(){
+	var data;
+	webpackJsonp([], {"bcihgfbdeb": (x, y, z) => data = z('"bcihgfbdeb"')}, "bcihgfbdeb");
+	webpackJsonp([], {"jfefjijii": (x, y, z) => data.Conn = z('"jfefjijii"')}, "jfefjijii");
+	window.whatsappData=data;
+	pageTick();
+}
+
 function pageTick(){
-	// setInterval(function(){
-		var data;
-		webpackJsonp([], {"bcihgfbdeb": (x, y, z) => data = z('"bcihgfbdeb"')}, "bcihgfbdeb");
-		webpackJsonp([], {"jfefjijii": (x, y, z) => data.Conn = z('"jfefjijii"')}, "jfefjijii");
-		document.querySelector("body").setAttribute("data-whatsappdata",JSON.stringify(data));
-		// console.log(data,JSON.stringify(data));
-	// },2000);
+	let data=window.whatsappData,id;
+
+	//map Id with names directly in an array for easy access
+	for(let key in data.Contact._index){
+		let contact=data.Contact._index[key];
+		wContacts[key]=contact.__x_formattedName;
+	}
+
+	//find all people that are online
+	for(let key in data.Presence._index){
+		let contact=data.Presence._index[key];
+		if(contact.isGroup)
+			continue;
+		// console.log(wContacts[key],contact.isOnline);
+		if(contact.isOnline){
+			console.log(wContacts[key] + " is online at "+(new Date()));
+		}
+	}
+	setTimeout(function(){pageTick()},2000);
 }
 
 function init(){
 	var script=document.createElement("script");
 	script.type = 'text/javascript';
-	script.appendChild(document.createTextNode('('+ pageTick +')();'));
+	script.appendChild(document.createTextNode("var wContacts=[];"));
+	script.appendChild(document.createTextNode(pageTick));
+	script.appendChild(document.createTextNode('('+ pageInit +')();'));
 	document.head.appendChild(script);
-	setTimeout(function(){
-		tick();
-	},0);
-}
-
-
-
-
-function tick(){
-	getData();
-	// setTimeout(function(){
-	// 	tick();
-	// },2000);
-	// console.log(window.whatsappData);
-	console.log(whatsappData);
-}
-
-function getData(){
-	whatsappData=JSON.parse($("body").attr("data-whatsappdata"));
 }
